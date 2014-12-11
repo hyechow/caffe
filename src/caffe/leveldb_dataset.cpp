@@ -47,7 +47,7 @@ bool LeveldbDataset<K, V, KCoder, VCoder>::open(const string& filename,
 
   if (!status.ok()) {
     LOG(ERROR) << "Failed to open leveldb " << filename
-        << ". Is it already existing?";
+		<< ". Is it already existing? " << status.ToString();
     return false;
   }
 

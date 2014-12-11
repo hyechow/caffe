@@ -5,12 +5,21 @@
 #include <opencv2/core/core.hpp>
 #endif
 
-#include <unistd.h>
 #include <string>
 
 #include "google/protobuf/message.h"
-#include "hdf5.h"
-#include "hdf5_hl.h"
+
+#ifndef _MSC_VER
+  #include <unistd.h>
+  #include "hdf5.h"
+  #include "hdf5_hl.h"
+#else
+  #include <io.h>
+  #include <fcntl.h>
+  #include <sys\stat.h>
+  #include <direct.h>
+  #include <mutex>
+#endif
 
 #include "caffe/blob.hpp"
 #include "caffe/proto/caffe.pb.h"
@@ -21,7 +30,26 @@ namespace caffe {
 
 using ::google::protobuf::Message;
 
+#ifdef _MSC_VER
+void MakeTempDir(string* temp_dirname);
+#endif
+
 inline void MakeTempFilename(string* temp_filename) {
+  
+#ifdef _MSC_VER
+  temp_filename->clear();
+  std::string dirname;
+  MakeTempDir(&dirname);
+  *temp_filename = dirname + "\\caffe_test.XXXXXX";
+  char* temp_filename_cstr = new char[temp_filename->size() + 1];
+  strcpy(temp_filename_cstr, temp_filename->c_str());
+  char *tmp = _mktemp(temp_filename_cstr);
+  int fd = _open(tmp, _O_CREAT, _S_IWRITE);
+  CHECK_GE(fd, 0) << "Failed to open a temporary file at: " << *temp_filename;
+  _close(fd);
+  *temp_filename = temp_filename_cstr;
+  delete[] temp_filename_cstr;
+#else
   temp_filename->clear();
   *temp_filename = "/tmp/caffe_test.XXXXXX";
   char* temp_filename_cstr = new char[temp_filename->size() + 1];
@@ -32,9 +60,11 @@ inline void MakeTempFilename(string* temp_filename) {
   close(fd);
   *temp_filename = temp_filename_cstr;
   delete[] temp_filename_cstr;
+#endif
 }
 
 inline void MakeTempDir(string* temp_dirname) {
+#ifndef _MSC_VER
   temp_dirname->clear();
   *temp_dirname = "/tmp/caffe_test.XXXXXX";
   char* temp_dirname_cstr = new char[temp_dirname->size() + 1];
@@ -42,9 +72,20 @@ inline void MakeTempDir(string* temp_dirname) {
   strcpy(temp_dirname_cstr, temp_dirname->c_str());
   char* mkdtemp_result = mkdtemp(temp_dirname_cstr);
   CHECK(mkdtemp_result != NULL)
-      << "Failed to create a temporary directory at: " << *temp_dirname;
+	<< "Failed to create a temporary directory at: " << *temp_dirname;
   *temp_dirname = temp_dirname_cstr;
   delete[] temp_dirname_cstr;
+#else
+  static std::mutex mut;
+  static int dir_count = 0;
+  mut.lock();
+  char buf[255];
+  sprintf(buf, "./temp/%d", ++dir_count);
+  _mkdir(buf);
+  fflush(stdout);
+  *temp_dirname = buf;
+  mut.unlock();
+#endif
 }
 
 bool ReadProtoFromTextFile(const char* filename, Message* proto);
@@ -165,6 +206,7 @@ inline cv::Mat DecodeDatumToCVMat(const Datum& datum) {
 void CVMatToDatum(const cv::Mat& cv_img, Datum* datum);
 #endif
 
+/*
 template <typename Dtype>
 void hdf5_load_nd_dataset_helper(
   hid_t file_id, const char* dataset_name_, int min_dim, int max_dim,
@@ -178,7 +220,7 @@ void hdf5_load_nd_dataset(
 template <typename Dtype>
 void hdf5_save_nd_dataset(
   const hid_t file_id, const string dataset_name, const Blob<Dtype>& blob);
-
+*/
 }  // namespace caffe
 
 #endif   // CAFFE_UTIL_IO_H_

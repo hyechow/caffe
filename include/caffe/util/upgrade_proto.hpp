@@ -38,8 +38,8 @@ void UpgradeNetDataTransformation(NetParameter* net_param);
 
 // Convert a NetParameter to NetParameterPrettyPrint used for dumping to
 // proto text files.
-void NetParameterToPrettyPrint(const NetParameter& param,
-                               NetParameterPrettyPrint* pretty_param);
+//void NetParameterToPrettyPrint(const NetParameter& param,
+//                               NetParameterPrettyPrint* pretty_param);
 
 // Check for deprecations and upgrade the NetParameter as needed.
 void UpgradeNetAsNeeded(NetParameter* param);

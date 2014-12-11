@@ -1,7 +1,5 @@
-#ifndef OSX
-#include <opencv2/core/core.hpp>
-#endif
 
+#include <opencv2/core/core.hpp>
 #include <string>
 #include <vector>
 
@@ -175,7 +173,6 @@ void DataTransformer<Dtype>::Transform(const vector<Datum> & datum_vector,
   }
 }
 
-#ifndef OSX
 template<typename Dtype>
 void DataTransformer<Dtype>::Transform(const vector<cv::Mat> & mat_vector,
                                        Blob<Dtype>* transformed_blob) {
@@ -195,9 +192,7 @@ void DataTransformer<Dtype>::Transform(const vector<cv::Mat> & mat_vector,
     Transform(mat_vector[item_id], &uni_blob);
   }
 }
-#endif
 
-#ifndef OSX
 template<typename Dtype>
 void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
                                        Blob<Dtype>* transformed_blob) {
@@ -298,7 +293,6 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
     }
   }
 }
-#endif
 
 template<typename Dtype>
 void DataTransformer<Dtype>::Transform(Blob<Dtype>* input_blob,

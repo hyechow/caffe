@@ -173,8 +173,12 @@ struct DatumLmdb {
 };
 const DataParameter_DB DatumLmdb::backend = DataParameter_DB_LMDB;
 
+#ifdef _MSC_VER
+typedef ::testing::Types<StringLeveldb, VectorLeveldb, DatumLeveldb> TestTypes;
+#else
 typedef ::testing::Types<StringLeveldb, StringLmdb, VectorLeveldb, VectorLmdb,
     DatumLeveldb, DatumLmdb> TestTypes;
+#endif
 
 TYPED_TEST_CASE(DatasetTest, TestTypes);
 

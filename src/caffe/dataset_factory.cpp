@@ -4,7 +4,9 @@
 
 #include "caffe/dataset_factory.hpp"
 #include "caffe/leveldb_dataset.hpp"
+#ifndef _MSC_VER
 #include "caffe/lmdb_dataset.hpp"
+#endif
 
 namespace caffe {
 
@@ -14,7 +16,11 @@ shared_ptr<Dataset<K, V> > DatasetFactory(const DataParameter_DB& type) {
   case DataParameter_DB_LEVELDB:
     return shared_ptr<Dataset<K, V> >(new LeveldbDataset<K, V>());
   case DataParameter_DB_LMDB:
-    return shared_ptr<Dataset<K, V> >(new LmdbDataset<K, V>());
+	#ifdef _MSC_VER
+		return NULL; //JAL: not integrated on windows
+	#else
+	    return shared_ptr<Dataset<K, V> >(new LmdbDataset<K, V>());
+    #endif
   default:
     LOG(FATAL) << "Unknown dataset type " << type;
     return shared_ptr<Dataset<K, V> >();
@@ -26,7 +32,11 @@ shared_ptr<Dataset<K, V> > DatasetFactory(const string& type) {
   if ("leveldb" == type) {
     return DatasetFactory<K, V>(DataParameter_DB_LEVELDB);
   } else if ("lmdb" == type) {
-    return DatasetFactory<K, V>(DataParameter_DB_LMDB);
+	#ifdef _MSC_VER
+	  return NULL; //JAL: not integrated on windows
+	#else
+	  return DatasetFactory<K, V>(DataParameter_DB_LMDB);
+	#endif
   } else {
     LOG(FATAL) << "Unknown dataset type " << type;
     return shared_ptr<Dataset<K, V> >();

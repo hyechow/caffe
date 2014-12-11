@@ -99,12 +99,13 @@ class LayerRegisterer {
   }
 };
 
+#ifndef _MSC_VER
 
 #define REGISTER_LAYER_CREATOR(type, creator)                                  \
   static LayerRegisterer<float> g_creator_f_##type(                            \
       LayerParameter_LayerType_##type, creator<float>);                        \
   static LayerRegisterer<double> g_creator_d_##type(                           \
-      LayerParameter_LayerType_##type, creator<double>)
+      LayerParameter_LayerType_##type, creator<double>)			
 
 #define REGISTER_LAYER_CLASS(type, clsname)                                    \
   template <typename Dtype>                                                    \
@@ -112,6 +113,47 @@ class LayerRegisterer {
     return new clsname<Dtype>(param);                                          \
   }                                                                            \
   REGISTER_LAYER_CREATOR(type, Creator_##clsname)
+
+#else
+	// VS compiler optimises the static variables out of the library. Not sure why but
+	// guess it thinks the variables aren't used internally and have no external interface
+	// so it doesn't need to bother with them. i.e. it ignroes the static variables
+	// created by REGISTER_LAYER_CREATOR macro. Couldn't get round it with the linker
+	// settings so had to brute force it with a LayerRegisterInit function, ugly I know.
+	// This needs to be called at the begining of the exe or dll using the library
+
+	#define REGISTER_LAYER_CREATOR(type, creator)             ;               
+
+	#define REGISTER_LAYER_CREATOR_MSC_VER(type, creator)					\
+	  static LayerRegisterer<float> g_creator_f_##type(                     \
+        LayerParameter_LayerType_##type, creator<float>);                   \
+	  static LayerRegisterer<double> g_creator_d_##type(                    \
+        LayerParameter_LayerType_##type, creator<double>)	
+
+	#define REGISTER_LAYER_CLASS(type, clsname)             ;
+	#define REGISTER_LAYER_CLASS_MSC_VER(type, clsname)								\
+	  template <typename Dtype>                                                    \
+	  Layer<Dtype>* Creator_##clsname(const LayerParameter& param) {               \
+		return new clsname<Dtype>(param);                                          \
+	  }
+	#define REGISTER_LAYER_CREATOR_CLASS_MSC_VER(type, clsname)	\
+	  REGISTER_LAYER_CREATOR_MSC_VER(type, Creator_##clsname)
+
+	bool InitLayerFactory();
+#endif
+
+
+
+// A function to get a specific layer from the specification given in
+// LayerParameter. Ideally this would be replaced by a factory pattern,
+// but we will leave it this way for now.
+// Yangqing's note: With LayerRegistry, we no longer need this thin wrapper any
+// more. It is provided here for backward compatibility and should be removed in
+// the future.
+template <typename Dtype>
+Layer<Dtype>* GetLayer(const LayerParameter& param) {
+  return LayerRegistry<Dtype>::CreateLayer(param);
+}
 
 }  // namespace caffe
 

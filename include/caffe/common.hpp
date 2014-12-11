@@ -1,9 +1,14 @@
 #ifndef CAFFE_COMMON_HPP_
 #define CAFFE_COMMON_HPP_
 
+#define BOOST_ALL_NO_LIB
+#define BOOST_RANDOM_NO_STREAM_OPERATORS
+#define BOOST_NO_CXX11_HDR_ARRAY
+
 #include <boost/shared_ptr.hpp>
 #include <gflags/gflags.h>
 #include <glog/logging.h>
+#include <wincompat.h>
 
 #include <cmath>
 #include <fstream>  // NOLINT(readability/streams)
@@ -73,8 +78,15 @@ using boost::shared_ptr;
 // Common functions and classes from std that caffe often uses.
 using std::fstream;
 using std::ios;
+
+#ifdef _MSC_VER
+#define isnan _isnan 
+#define isinf(x) (!_finite(x))
+#else
 using std::isnan;
 using std::isinf;
+#endif
+
 using std::iterator;
 using std::make_pair;
 using std::map;

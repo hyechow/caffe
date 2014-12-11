@@ -5,7 +5,13 @@
 #include <utility>
 #include <vector>
 
+#ifdef _MSC_VER
+  class MDB_env;
+  struct MDB_dbi{};
+  class MDB_txn;
+#else
 #include "lmdb.h"
+#endif
 
 #include "caffe/common.hpp"
 #include "caffe/dataset.hpp"
@@ -56,21 +62,25 @@ class LmdbDataset : public Dataset<K, V, KCoder, VCoder> {
           dbi_(dbi) { }
 
     shared_ptr<DatasetState> clone() {
-      CHECK(cursor_);
+	  #ifdef _MSC_VER
+		throw(std::exception("Not implemented on windows. sorry");
+	  #else
+		  CHECK(cursor_);
 
-      MDB_cursor* new_cursor;
-      int retval;
+		  MDB_cursor* new_cursor;
+		  int retval;
 
-      retval = mdb_cursor_open(txn_, *dbi_, &new_cursor);
-      CHECK_EQ(retval, MDB_SUCCESS) << mdb_strerror(retval);
-      MDB_val key;
-      MDB_val val;
-      retval = mdb_cursor_get(cursor_, &key, &val, MDB_GET_CURRENT);
-      CHECK_EQ(retval, MDB_SUCCESS) << mdb_strerror(retval);
-      retval = mdb_cursor_get(new_cursor, &key, &val, MDB_SET);
-      CHECK_EQ(MDB_SUCCESS, retval) << mdb_strerror(retval);
+		  retval = mdb_cursor_open(txn_, *dbi_, &new_cursor);
+		  CHECK_EQ(retval, MDB_SUCCESS) << mdb_strerror(retval);
+		  MDB_val key;
+		  MDB_val val;
+		  retval = mdb_cursor_get(cursor_, &key, &val, MDB_GET_CURRENT);
+		  CHECK_EQ(retval, MDB_SUCCESS) << mdb_strerror(retval);
+		  retval = mdb_cursor_get(new_cursor, &key, &val, MDB_SET);
+		  CHECK_EQ(MDB_SUCCESS, retval) << mdb_strerror(retval);
 
-      return shared_ptr<DatasetState>(new LmdbState(new_cursor, txn_, dbi_));
+		  return shared_ptr<DatasetState>(new LmdbState(new_cursor, txn_, dbi_));
+       #endif
     }
 
     MDB_cursor* cursor_;

@@ -3,6 +3,11 @@
 
 #include <stdint.h>
 #include <cmath>  // for std::fabs and std::signbit
+#if _MSC_VER < 1800
+namespace std {
+template<typename DType> inline bool signbit(DType num) { return _copysign(1.0, num) < 0; }
+}
+#endif
 
 #include "glog/logging.h"
 

@@ -312,6 +312,8 @@ TYPED_TEST(DataLayerTest, TestReadCropTestLevelDB) {
   this->TestReadCrop();
 }
 
+#ifndef _MSC_VER // LMDB is not supported on windows
+
 TYPED_TEST(DataLayerTest, TestReadLMDB) {
   const bool unique_pixels = false;  // all pixels the same; images different
   this->Fill(unique_pixels, DataParameter_DB_LMDB);
@@ -349,5 +351,7 @@ TYPED_TEST(DataLayerTest, TestReadCropTestLMDB) {
   this->Fill(unique_pixels, DataParameter_DB_LMDB);
   this->TestReadCrop();
 }
+
+#endif
 
 }  // namespace caffe
