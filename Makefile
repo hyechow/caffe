@@ -306,7 +306,15 @@ else
 		# OS X packages atlas as the vecLib framework
 		BLAS_INCLUDE ?= /System/Library/Frameworks/vecLib.framework/Versions/Current/Headers/
 		LIBRARIES += cblas
-		LDFLAGS += -framework vecLib
+
+		ifneq ($(findstring Xcode 6, $(shell xcodebuild -version)),)
+			BLAS_INCLUDE ?= /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/Accelerate.framework/Versions/Current/Frameworks/vecLib.framework/Headers/
+			LDFLAGS += -framework Accelerate
+		else
+			# OS X packages atlas as the vecLib framework
+			BLAS_INCLUDE ?= /System/Library/Frameworks/vecLib.framework/Versions/Current/Headers/
+			LDFLAGS += -framework vecLib
+		endif
 	endif
 endif
 INCLUDE_DIRS += $(BLAS_INCLUDE)
