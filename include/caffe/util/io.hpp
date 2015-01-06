@@ -206,7 +206,7 @@ inline cv::Mat DecodeDatumToCVMat(const Datum& datum) {
 void CVMatToDatum(const cv::Mat& cv_img, Datum* datum);
 #endif
 
-/*
+#ifndef _MSC_VER
 template <typename Dtype>
 void hdf5_load_nd_dataset_helper(
   hid_t file_id, const char* dataset_name_, int min_dim, int max_dim,
@@ -220,7 +220,7 @@ void hdf5_load_nd_dataset(
 template <typename Dtype>
 void hdf5_save_nd_dataset(
   const hid_t file_id, const string dataset_name, const Blob<Dtype>& blob);
-*/
+#endif
 }  // namespace caffe
 
 #endif   // CAFFE_UTIL_IO_H_

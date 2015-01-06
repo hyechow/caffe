@@ -8,7 +8,10 @@
 #include <boost/shared_ptr.hpp>
 #include <gflags/gflags.h>
 #include <glog/logging.h>
+
+#ifdef _MSC_VER
 #include <wincompat.h>
+#endif
 
 #include <cmath>
 #include <fstream>  // NOLINT(readability/streams)

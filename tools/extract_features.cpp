@@ -96,7 +96,7 @@ int feature_extraction_pipeline(int argc, char** argv) {
      top: "fc7"
    }
    */
-  string feature_extraction_proto(argv[++arg_pos]);
+  std::string feature_extraction_proto(argv[++arg_pos]);
   boost::shared_ptr<Net<Dtype> > feature_extraction_net(
       new Net<Dtype>(feature_extraction_proto));
   feature_extraction_net->CopyTrainedLayersFrom(pretrained_binary_proto);
