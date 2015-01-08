@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <ctime>
 
-#ifdef __MSC_VER
+#ifdef _MSC_VER
 #include <process.h>
 #endif
 
@@ -17,7 +17,7 @@ shared_ptr<Caffe> Caffe::singleton_;
 int64_t cluster_seedgen(void) {
   int64_t s, seed, pid;
 
-#ifndef __MSC_VER
+#ifndef _MSC_VER
   FILE* f = fopen("/dev/urandom", "rb");
   if (f && fread(&seed, 1, sizeof(seed), f) == sizeof(seed)) {
     fclose(f);
