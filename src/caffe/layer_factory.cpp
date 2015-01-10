@@ -4,7 +4,9 @@
 #include "caffe/layer_factory.hpp"
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/vision_layers.hpp"
-
+#if defined(_MSC_VER) || defined(__MACH__)
+#include "caffe/common_layers.hpp"
+#endif
 
 namespace caffe {
 
@@ -154,9 +156,7 @@ Layer<Dtype>* GetTanHLayer(const LayerParameter& param) {
 
 REGISTER_LAYER_CREATOR(TANH, GetTanHLayer);
 
-#ifdef _MSC_VER
-
-#include "caffe/common_layers.hpp"
+#if defined(_MSC_VER) || defined(__MACH__)
 
 REGISTER_LAYER_CLASS_MSC_VER(ABSVAL, AbsValLayer);
 REGISTER_LAYER_CLASS_MSC_VER(ACCURACY, AccuracyLayer);

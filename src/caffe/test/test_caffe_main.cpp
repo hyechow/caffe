@@ -17,7 +17,7 @@ using caffe::CAFFE_TEST_CUDA_PROP;
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   caffe::GlobalInit(&argc, &argv);
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MACH__)
   caffe::InitLayerFactory();
 #endif
 #ifndef CPU_ONLY

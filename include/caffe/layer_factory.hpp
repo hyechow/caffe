@@ -99,7 +99,7 @@ class LayerRegisterer {
   }
 };
 
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(__MACH__)
 
 #define REGISTER_LAYER_CREATOR(type, creator)                                  \
   static LayerRegisterer<float> g_creator_f_##type(                            \
@@ -122,6 +122,8 @@ class LayerRegisterer {
 	// settings so had to brute force it with a LayerRegisterInit function, ugly I know.
 	// This needs to be called at the begining of the exe or dll using the library
 
+    // I also had this problem linked the libCaffe.a using xcode 6 OSX 10.10 so did it likewise for OSX
+    
 	#define REGISTER_LAYER_CREATOR(type, creator)             ;               
 
 	#define REGISTER_LAYER_CREATOR_MSC_VER(type, creator)					\

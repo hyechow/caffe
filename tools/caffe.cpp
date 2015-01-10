@@ -295,6 +295,9 @@ int main(int argc, char** argv) {
       "  time            benchmark model execution time");
   // Run tool or show usage.
   caffe::GlobalInit(&argc, &argv);
+#if defined(_MSC_VER) || defined(__MACH__)
+  caffe::InitLayerFactory();
+#endif
   if (argc == 2) {
     return GetBrewFunction(caffe::string(argv[1]))();
   } else {
