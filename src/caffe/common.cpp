@@ -58,6 +58,14 @@ Caffe::Caffe()
 
 Caffe::~Caffe() { }
 
+Caffe::Brew Caffe::mode() { return Get().mode_; }
+
+Caffe::Phase Caffe::phase() { return Get().phase_; }
+
+void Caffe::set_mode(Brew mode) { Get().mode_ = mode; }
+
+void Caffe::set_phase(Phase phase) { Get().phase_ = phase; }
+
 void Caffe::set_random_seed(const unsigned int seed) {
   // RNG seed
   Get().random_generator_.reset(new RNG(seed));
